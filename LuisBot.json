@@ -1,0 +1,99 @@
+{
+  "luis_schema_version": "1.3.0",
+  "name": "LuisBot",
+  "desc": "",
+  "culture": "en-us",
+  "intents": [
+    {
+      "name": "None"
+    },
+    {
+      "name": "CreateGameDialog"
+    },
+    {
+      "name": "HelpDialog"
+    }
+  ],
+  "entities": [
+    {
+      "name": "Sides"
+    },
+    {
+      "name": "Count"
+    }
+  ],
+  "composites": [],
+  "closedLists": [],
+  "bing_entities": [],
+  "actions": [],
+  "model_features": [
+    {
+      "name": "Roll",
+      "mode": true,
+      "words": "roll,throw,try",
+      "activated": true
+    }
+  ],
+  "regex_features": [
+    {
+      "name": "SidesRegex",
+      "pattern": "^(4|6|8|10|12|20)$",
+      "activated": true
+    },
+    {
+      "name": "CountRegex",
+      "pattern": "^[1-9]\\d*$",
+      "activated": true
+    }
+  ],
+  "utterances": [
+    {
+      "text": "roll some dice",
+      "intent": "CreateGameDialog",
+      "entities": []
+    },
+    {
+      "text": "roll a die",
+      "intent": "CreateGameDialog",
+      "entities": [
+        {
+          "entity": "Count",
+          "startPos": 1,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "roll a 4 sides die",
+      "intent": "CreateGameDialog",
+      "entities": [
+        {
+          "entity": "Count",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "Sides",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "roll 8 sides dice",
+      "intent": "CreateGameDialog",
+      "entities": [
+        {
+          "entity": "Sides",
+          "startPos": 1,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "help",
+      "intent": "HelpDialog",
+      "entities": []
+    }
+  ]
+}

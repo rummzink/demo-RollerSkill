@@ -43,9 +43,6 @@ var bot = new builder.UniversalBot(connector, function (session) {
  * We're using a RegEx to match the users input but we could just as 
  * easily use a LUIS intent.
  */
-var recognizer = new builder.LuisRecognizer(process.env.LUIS_MODEL_URL);
-bot.recognizer(recognizer);
-
 bot.dialog('CreateGameDialog', [
     function (session) {
         // Initialize game structure.
@@ -118,7 +115,10 @@ bot.dialog('CreateGameDialog', [
          */
         session.replaceDialog('PlayGameDialog', { game: game });
     }
-]).triggerAction({ matches: 'CreateGameDialog' });
+]).triggerAction({ matches: [
+    /(roll|role|throw|shoot).*(dice|die|dye|bones)/i,
+    /new game/i
+ ]});
 
 /**
  * This dialog is our main game loop. We'll store the game structure in
@@ -262,7 +262,7 @@ bot.dialog('HelpDialog', function (session) {
         .addAttachment(card)
         .inputHint(builder.InputHint.acceptingInput);
     session.send(msg).endDialog();
-}).triggerAction({ matches: 'HelpDialog' });
+}).triggerAction({ matches: /help/i });
 
 /** Helper function to wrap SSML stored in the prompts file with <speak/> tag. */
 function speak(session, prompt) {
