@@ -71,7 +71,7 @@ bot.dialog('CreateGameDialog', [
             next({ response: session.dialogData.sidesEntity.entity });
         } else {
             // no entities detected, ask user for a destination
-            builder.Prompts.text(session, 'Please enter your destination', { 
+            builder.Prompts.text(session, 'Please enter the number of sides of the dice to be rolled.', { 
                 speak: speak(session, 'choose_destination') 
             });
         }
@@ -90,19 +90,27 @@ bot.dialog('CreateGameDialog', [
          * - The number prompt lets us pass additional options to say we only want
          *   integers back and what's the min & max value that's allowed.
          */
-        var prompt = session.gettext('choose_count', game.sides);
-        builder.Prompts.number(session, prompt, {
-            speak: speak(session, 'choose_count_ssml'),
-            minValue: 1,
-            maxValue: 100,
-            integerOnly: true
-        });
+
+        if (session.dialogData.countEntity) {
+            // city entity detected, continue to next step
+            next({ response: session.dialogData.countEntity.entity });
+        } else {
+            // no entities detected, ask user for a destination
+            var prompt = session.gettext('choose_count', game.sides);
+            builder.Prompts.number(session, prompt, {
+                speak: speak(session, 'choose_count_ssml'),
+                minValue: 1,
+                maxValue: 100,
+                integerOnly: true
+            });
+        }
+
     },
     function (session, results) {
         // Store users input
         // - The response is already a number.
         var game = session.dialogData.game;
-        game.count = results.response;
+        game.count = Number(results.response);
 
         /**
          * Play the game we just created.
