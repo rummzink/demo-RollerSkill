@@ -65,7 +65,6 @@ bot.dialog('CreateGameDialog', [
         var sidesEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Sides');
         if (sidesEntity){
             game.sides = sidesEntity.entity;
-            game.count = game.sides + 1;
         }
         var countEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Count');
         if (countEntity){
@@ -82,7 +81,7 @@ bot.dialog('CreateGameDialog', [
             });
         }
     },
-    function (session, results) {
+    function (session, results, next) {
         // Store users input
         // - The response comes back as a find result with index & entity value matched.
         var game = session.dialogData.game;
@@ -97,7 +96,7 @@ bot.dialog('CreateGameDialog', [
          *   integers back and what's the min & max value that's allowed.
          */
 
-        if (false & game.count !== null) {
+        if (game.count !== null) {
             // city entity detected, continue to next step
             next({ response: game.count });
         } else {
@@ -116,7 +115,18 @@ bot.dialog('CreateGameDialog', [
         // Store users input
         // - The response is already a number.
         var game = session.dialogData.game;
-        game.count = Number(results.response);
+        if (result.reponse == 'once'){
+            game.count = 1;
+        }
+        else if (result.reponse == 'twice'){
+            game.count = 2;
+        }
+        else if ( ! isNaN(Number(result.reponse))){
+            game.count = Number(result.reponse);
+        }
+        else{
+            
+        }
 
         /**
          * Play the game we just created.
