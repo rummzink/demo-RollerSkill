@@ -62,19 +62,18 @@ bot.dialog('CreateGameDialog', [
         // builder.Prompts.choice(session, 'choose_sides', choices, { 
         //     speak: speak(session, 'choose_sides_ssml') 
         // });
-        session.dialogData.sidesEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Sides');
-        if (session.dialogData.sidesEntity){
-            console.log("Found Sides = ", session.dialogData.sidesEntity.entity)
+        var sidesEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Sides');
+        if (sidesEntity){
+            game.sides = sidesEntity.entity;
         }
-        session.dialogData.countEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Count');
-        if (session.dialogData.countEntity){
-            console.log("Found Count = ", session.dialogData.countEntity.entity)
+        var countEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Count');
+        if (countEntity){
+            game.count = countEntity.entity;
         }
 
-        if (session.dialogData.sidesEntity) {
+        if (sidesEntity) {
             // city entity detected, continue to next step
-            console.log("Sides = ", session.dialogData.sidesEntity.entity);
-            next({ response: session.dialogData.sidesEntity.entity });
+            next({ response: sidesEntity.entity });
         } else {
             // no entities detected, ask user for a destination
             builder.Prompts.text(session, 'Please enter the number of sides of the dice to be rolled.', { 
@@ -97,10 +96,9 @@ bot.dialog('CreateGameDialog', [
          *   integers back and what's the min & max value that's allowed.
          */
 
-        if (session.dialogData.countEntity) {
+        if (game.count !== null) {
             // city entity detected, continue to next step
-            console.log("Count = ", session.dialogData.countEntity.entity);
-            next({ response: session.dialogData.countEntity.entity });
+            next({ response: game.count });
         } else {
             // no entities detected, ask user for a destination
             var prompt = session.gettext('choose_count', game.sides);
