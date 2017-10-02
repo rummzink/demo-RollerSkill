@@ -5,9 +5,7 @@ Roller is a dice rolling skill that's been optimized for speech.
 require('dotenv-extended').load();
 var restify = require('restify');
 var builder = require('botbuilder');
-// var ssml = require('./ssml');
-var Store = require('./store');
-var spellService = require('./spell-service');
+var ssml = require('./ssml');
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -45,11 +43,8 @@ var bot = new builder.UniversalBot(connector, function (session) {
  * We're using a RegEx to match the users input but we could just as 
  * easily use a LUIS intent.
  */
-var recognizer = new builder.LuisRecognizer(process.env.LUIS_MODEL_URL);
-bot.recognizer(recognizer);
-
 bot.dialog('CreateGameDialog', [
-    function (session, args, next) {
+    function (session) {
         // Initialize game structure.
         // - dialogData gives us temporary storage of this data in between
         //   turns with the user.
@@ -79,32 +74,15 @@ bot.dialog('CreateGameDialog', [
             { value: '12', action: { title: '12 Sides' }, synonyms: 'twelve|12 sided|12 sides' },
             { value: '20', action: { title: '20 Sides' }, synonyms: 'twenty|20 sided|20 sides' }
         ];
-        // try extracting entities
-        session.dialogData.sidesEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Sides');
-        session.dialogData.countEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Count');
-
-        if (session.dialogData.sidesEntity) {
-            // sides entity detected, continue to next step
-            next({ response: session.dialogData.sidesEntity.entity });
-        } else {
-            // no entities detected, ask user for a destination
-            builder.Prompts.text(session, 'Please specify the number of dice sides');
-        }
-        
-        // builder.Prompts.choice(session, 'choose_sides', choices, { 
-        //     speak: speak(session, 'choose_sides_ssml') 
-        // });
+        builder.Prompts.choice(session, 'choose_sides', choices, { 
+            speak: speak(session, 'choose_sides_ssml') 
+        });
     },
     function (session, results) {
         // Store users input
         // - The response comes back as a find result with index & entity value matched.
         var game = session.dialogData.game;
-        if (session.dialogData.sidesEntity){
-            game.sides = Number(session.dialogData.sidesEntity.entity);
-        } 
-        else{
-            game.sides = Number(results.response.entity);
-        }
+        game.sides = Number(results.response.entity);
 
         /**
          * Ask for number of dice.
@@ -114,22 +92,19 @@ bot.dialog('CreateGameDialog', [
          * - The number prompt lets us pass additional options to say we only want
          *   integers back and what's the min & max value that's allowed.
          */
-
-        next({ response:0 });
-        // var prompt = session.gettext('choose_count', game.sides);
-        // builder.Prompts.number(session, prompt, {
-        //     speak: speak(session, 'choose_count_ssml'),
-        //     minValue: 1,
-        //     maxValue: 100,
-        //     integerOnly: true
-        // });
+        var prompt = session.gettext('choose_count', game.sides);
+        builder.Prompts.number(session, prompt, {
+            speak: speak(session, 'choose_count_ssml'),
+            minValue: 1,
+            maxValue: 100,
+            integerOnly: true
+        });
     },
     function (session, results) {
         // Store users input
         // - The response is already a number.
         var game = session.dialogData.game;
-        // game.count = results.response;
-        game.count = 1;
+        game.count = results.response;
 
         /**
          * Play the game we just created.
@@ -140,7 +115,10 @@ bot.dialog('CreateGameDialog', [
          */
         session.replaceDialog('PlayGameDialog', { game: game });
     }
-]).triggerAction({ matches: 'CreateGameDialog' });
+]).triggerAction({ matches: [
+    /(roll|role|throw|shoot).*(dice|die|dye|bones)/i,
+    /new game/i
+ ]});
 
 /**
  * This dialog is our main game loop. We'll store the game structure in
@@ -246,7 +224,7 @@ bot.dialog('PlayGameDialog', function (session, args) {
         // the 'CreateGameDialog'
         session.replaceDialog('CreateGameDialog');
     }
-}).triggerAction({ matches: 'PlayGameDialog' });
+}).triggerAction({ matches: /(roll|role|throw|shoot) again/i });
 
 /**
  * Listen for the user to ask to play craps.
@@ -257,58 +235,37 @@ bot.dialog('PlayGameDialog', function (session, args) {
  * says without tampering with the dialog stack. In our case what we want to do is
  * call 'PlayGameDialog' with a pre-defined game structure. 
  */
-
-// bot.customAction({
-//     matches: /(play|start).*(craps)/i,
-//     onSelectAction: function (session, args, next) {
-//         // The user could be in another dialog so clear the dialog stack first
-//         // to make sure we end that task.
-//         session.clearDialogStack().beginDialog('PlayGameDialog', {
-//             game: { type: 'craps', sides: 6, count: 2, turn: 0 }
-//         });
-//     }
-// });
+bot.customAction({
+    matches: /(play|start).*(craps)/i,
+    onSelectAction: function (session, args, next) {
+        // The user could be in another dialog so clear the dialog stack first
+        // to make sure we end that task.
+        session.clearDialogStack().beginDialog('PlayGameDialog', {
+            game: { type: 'craps', sides: 6, count: 2, turn: 0 }
+        });
+    }
+});
 
 /**
  * Every bot should have a help dialog. Ours will use a card with some buttons
  * to educate the user with the options available to them.
  */
 bot.dialog('HelpDialog', function (session) {
-    // var card = new builder.HeroCard(session)
-    //     .title('help_title')
-    //     .buttons([
-    //         builder.CardAction.imBack(session, 'roll some dice', 'Roll Dice'),
-    //         builder.CardAction.imBack(session, 'play craps', 'Play Craps')
-    //     ]);
-    // var msg = new builder.Message(session)
-    //     .speak(speak(session, 'help_ssml'))
-    //     .addAttachment(card)
-    //     .inputHint(builder.InputHint.acceptingInput);
-    // session.send(msg).endDialog();
-    session.endDialog('Hi! Try asking me things like \'....\', \'.....\' or \'.......\'');
-}).triggerAction({ matches: 'HelpDialog' });
+    var card = new builder.HeroCard(session)
+        .title('help_title')
+        .buttons([
+            builder.CardAction.imBack(session, 'roll some dice', 'Roll Dice'),
+            builder.CardAction.imBack(session, 'play craps', 'Play Craps')
+        ]);
+    var msg = new builder.Message(session)
+        .speak(speak(session, 'help_ssml'))
+        .addAttachment(card)
+        .inputHint(builder.InputHint.acceptingInput);
+    session.send(msg).endDialog();
+}).triggerAction({ matches: /help/i });
 
 /** Helper function to wrap SSML stored in the prompts file with <speak/> tag. */
-
-// function speak(session, prompt) {
-//     var localized = session.gettext(prompt);
-//     return ssml.speak(localized);
-// }
-
-// Spell Check
-if (process.env.IS_SPELL_CORRECTION_ENABLED === 'true') {
-    bot.use({
-        botbuilder: function (session, next) {
-            spellService
-                .getCorrectedText(session.message.text)
-                .then(function (text) {
-                    session.message.text = text;
-                    next();
-                })
-                .catch(function (error) {
-                    console.error(error);
-                    next();
-                });
-        }
-    });
+function speak(session, prompt) {
+    var localized = session.gettext(prompt);
+    return ssml.speak(localized);
 }
