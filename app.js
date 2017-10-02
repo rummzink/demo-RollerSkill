@@ -61,7 +61,7 @@ bot.dialog('CreateGameDialog', [
         // builder.Prompts.choice(session, 'choose_sides', choices, { 
         //     speak: speak(session, 'choose_sides_ssml') 
         // });
-        next({ response: 0 });
+        builder.Prompts.text(session, 'Please enter your destination');
     },
     function (session, results) {
         // Store users input
