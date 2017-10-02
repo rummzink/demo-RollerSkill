@@ -115,6 +115,109 @@ bot.dialog('CreateGameDialog', [
     }
 ]).triggerAction({ matches: 'CreateGameDialog'});
 
+
+bot.dialog('PlayGameDialog', function (session, args) {
+    // Get current or new game structure.
+    var game = args.game || session.conversationData.game;
+    if (game) {
+        // Generate rolls
+        var total = 0;
+        var rolls = [];
+        for (var i = 0; i < game.count; i++) {
+            var roll = Math.floor(Math.random() * game.sides) + 1;
+            if (roll > game.sides) {
+                // Accounts for 1 in a million chance random() generated a 1.0
+                roll = game.sides;
+            }
+            total += roll;
+            rolls.push(roll);
+        }
+
+        // Format roll results
+        var results = '';
+        var multiLine = rolls.length > 5;
+        for (var i = 0; i < rolls.length; i++) {
+            if (i > 0) {
+                results += ' . ';
+            }
+            results += rolls[i];
+        }
+
+        // Render results using a card
+        var card = new builder.HeroCard(session)
+            .subtitle(game.count > 1 ? 'card_subtitle_plural' : 'card_subtitle_singular', game)
+            .buttons([
+                builder.CardAction.imBack(session, 'roll again', 'Roll Again'),
+                builder.CardAction.imBack(session, 'new game', 'New Game')
+            ]);
+        if (multiLine) {
+            //card.title('card_title').text('\n\n' + results + '\n\n');
+            card.text(results);
+        } else {
+            card.title(results);
+        }
+        var msg = new builder.Message(session).addAttachment(card);
+
+        // Determine bots reaction for speech purposes
+        var reaction = 'normal';
+        var min = game.count;
+        var max = game.count * game.sides;
+        var score = total/max;
+        if (score === 1.0) {
+            reaction = 'best';
+        } else if (score === 0) {
+            reaction = 'worst';
+        } else if (score <= 0.3) {
+            reaction = 'bad';
+        } else if (score >= 0.8) {
+            reaction = 'good';
+        }
+        
+        // Check for special craps rolls
+        if (game.type === 'craps') {
+            switch (total) {
+                case 2:
+                case 3:
+                case 12:
+                    reaction = 'craps_lose';
+                    break;
+                case 7:
+                    reaction = 'craps_seven';
+                    break;
+                case 11:
+                    reaction = 'craps_eleven';
+                    break;
+                default:
+                    reaction = 'craps_retry';
+                    break;
+            }
+        }
+
+        // Build up spoken response
+        var spoken = '';
+        if (game.turn === 0) {
+            spoken += session.gettext('start_' + game.type + '_game_ssml') + ' ';
+        } 
+        spoken += session.gettext(reaction + '_roll_reaction_ssml');
+        msg.speak(ssml.speak(spoken));
+
+        // Incrment number of turns and store game to roll again
+        game.turn++;
+        session.conversationData.game = game;
+
+        /**
+         * Send card and bots reaction to user. 
+         */
+        msg.inputHint(builder.InputHint.acceptingInput);
+        session.send(msg).endDialog();
+    } else {
+        // User started session with "roll again" so let's just send them to
+        // the 'CreateGameDialog'
+        session.replaceDialog('CreateGameDialog');
+    }
+}).triggerAction({ matches: 'PlayGameDialog' });
+
+
 bot.dialog('SearchHotels', [
     function (session, args, next) {
         session.send('Welcome to the Hotels finder! We are analyzing your message: \'%s\'', session.message.text);
