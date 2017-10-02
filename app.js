@@ -5,7 +5,9 @@ Roller is a dice rolling skill that's been optimized for speech.
 require('dotenv-extended').load();
 var restify = require('restify');
 var builder = require('botbuilder');
-var ssml = require('./ssml');
+// var ssml = require('./ssml');
+var Store = require('./store');
+var spellService = require('./spell-service');
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -47,7 +49,7 @@ var recognizer = new builder.LuisRecognizer(process.env.LUIS_MODEL_URL);
 bot.recognizer(recognizer);
 
 bot.dialog('CreateGameDialog', [
-    function (session) {
+    function (session, args, next) {
         // Initialize game structure.
         // - dialogData gives us temporary storage of this data in between
         //   turns with the user.
@@ -77,15 +79,32 @@ bot.dialog('CreateGameDialog', [
             { value: '12', action: { title: '12 Sides' }, synonyms: 'twelve|12 sided|12 sides' },
             { value: '20', action: { title: '20 Sides' }, synonyms: 'twenty|20 sided|20 sides' }
         ];
-        builder.Prompts.choice(session, 'choose_sides', choices, { 
-            speak: speak(session, 'choose_sides_ssml') 
-        });
+        // try extracting entities
+        session.dialogData.sidesEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Sides');
+        session.dialogData.countEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Count');
+
+        if (session.dialogData.sidesEntity) {
+            // sides entity detected, continue to next step
+            next({ response: session.dialogData.sidesEntity.entity });
+        } else {
+            // no entities detected, ask user for a destination
+            builder.Prompts.text(session, 'Please specify the number of dice sides');
+        }
+        
+        // builder.Prompts.choice(session, 'choose_sides', choices, { 
+        //     speak: speak(session, 'choose_sides_ssml') 
+        // });
     },
     function (session, results) {
         // Store users input
         // - The response comes back as a find result with index & entity value matched.
         var game = session.dialogData.game;
-        game.sides = Number(results.response.entity);
+        if (session.dialogData.sidesEntity){
+            game.sides = Number(session.dialogData.sidesEntity.entity);
+        } 
+        else{
+            game.sides = Number(results.response.entity);
+        }
 
         /**
          * Ask for number of dice.
@@ -95,19 +114,22 @@ bot.dialog('CreateGameDialog', [
          * - The number prompt lets us pass additional options to say we only want
          *   integers back and what's the min & max value that's allowed.
          */
-        var prompt = session.gettext('choose_count', game.sides);
-        builder.Prompts.number(session, prompt, {
-            speak: speak(session, 'choose_count_ssml'),
-            minValue: 1,
-            maxValue: 100,
-            integerOnly: true
-        });
+
+        next({ response:0 })
+        // var prompt = session.gettext('choose_count', game.sides);
+        // builder.Prompts.number(session, prompt, {
+        //     speak: speak(session, 'choose_count_ssml'),
+        //     minValue: 1,
+        //     maxValue: 100,
+        //     integerOnly: true
+        // });
     },
     function (session, results) {
         // Store users input
         // - The response is already a number.
         var game = session.dialogData.game;
-        game.count = results.response;
+        // game.count = results.response;
+        game.count = 1;
 
         /**
          * Play the game we just created.
