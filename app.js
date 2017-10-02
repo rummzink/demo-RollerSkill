@@ -5,6 +5,7 @@ var builder = require('botbuilder');
 var restify = require('restify');
 var Store = require('./store');
 var spellService = require('./spell-service');
+var ssml = require('./ssml');
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -70,7 +71,9 @@ bot.dialog('CreateGameDialog', [
             next({ response: session.dialogData.sidesEntity.entity });
         } else {
             // no entities detected, ask user for a destination
-            builder.Prompts.text(session, 'Please enter your destination');
+            builder.Prompts.text(session, 'Please enter your destination', { 
+                speak: speak(session, 'choose_destination') 
+            });
         }
     },
     function (session, results) {
@@ -228,4 +231,8 @@ function reviewAsAttachment(review) {
         .title(review.title)
         .text(review.text)
         .images([new builder.CardImage().url(review.image)]);
+}
+function speak(session, prompt) {
+    var localized = session.gettext(prompt);
+    return ssml.speak(localized);
 }

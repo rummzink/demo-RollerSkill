@@ -61,5 +61,6 @@
         "You can't do better. Oh wait you can."
     ],
     "help_title": "Roller Options",
-    "help_ssml": "I'm roller, the dice rolling bot. You can say 'roll some dice' or play one of the games I know how to play."
+    "help_ssml": "I'm roller, the dice rolling bot. You can say 'roll some dice' or play one of the games I know how to play.",
+    "choose_destination": "Please enter your destination."
 }
