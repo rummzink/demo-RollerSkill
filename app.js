@@ -115,7 +115,7 @@ bot.dialog('CreateGameDialog', [
          *   integers back and what's the min & max value that's allowed.
          */
 
-        next({ response:0 })
+        next({ response:0 });
         // var prompt = session.gettext('choose_count', game.sides);
         // builder.Prompts.number(session, prompt, {
         //     speak: speak(session, 'choose_count_ssml'),
