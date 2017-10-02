@@ -28,7 +28,7 @@ var recognizer = new builder.LuisRecognizer(process.env.LUIS_MODEL_URL);
 bot.recognizer(recognizer);
 
 bot.dialog('CreateGameDialog', [
-    function (session) {
+    function (session, args, next) {
         // Initialize game structure.
         // - dialogData gives us temporary storage of this data in between
         //   turns with the user.
