@@ -30,6 +30,7 @@ bot.recognizer(recognizer);
 
 bot.dialog('CreateGameDialog', [
     function (session, args, next) {
+        console.log("Welcome to ", "CreateGameDialog!");
         // Initialize game structure.
         // - dialogData gives us temporary storage of this data in between
         //   turns with the user.
