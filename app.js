@@ -80,7 +80,7 @@ bot.dialog('CreateGameDialog', [
         // Store users input
         // - The response comes back as a find result with index & entity value matched.
         var game = session.dialogData.game;
-        game.sides = Number(results.response);
+        game.sides = Number(results.response.entity);
 
         /**
          * Ask for number of dice.
