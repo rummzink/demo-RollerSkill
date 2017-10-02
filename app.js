@@ -97,7 +97,7 @@ bot.dialog('CreateGameDialog', [
          *   integers back and what's the min & max value that's allowed.
          */
 
-        if (game.count !== null) {
+        if (false & game.count !== null) {
             // city entity detected, continue to next step
             next({ response: game.count });
         } else {
