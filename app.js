@@ -61,7 +61,17 @@ bot.dialog('CreateGameDialog', [
         // builder.Prompts.choice(session, 'choose_sides', choices, { 
         //     speak: speak(session, 'choose_sides_ssml') 
         // });
-        builder.Prompts.text(session, 'Please enter your destination');
+        session.dialogData.sidesEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Sides');
+        session.dialogData.countEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Count');
+        
+
+        if (session.dialogData.sidesEntity) {
+            // city entity detected, continue to next step
+            next({ response: session.dialogData.sidesEntity.entity });
+        } else {
+            // no entities detected, ask user for a destination
+            builder.Prompts.text(session, 'Please enter your destination');
+        }
     },
     function (session, results) {
         // Store users input
