@@ -65,6 +65,7 @@ bot.dialog('CreateGameDialog', [
         var sidesEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Sides');
         if (sidesEntity){
             game.sides = sidesEntity.entity;
+            game.count = game.sides + 1;
         }
         var countEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Count');
         if (countEntity){
