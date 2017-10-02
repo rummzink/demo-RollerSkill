@@ -246,7 +246,7 @@ bot.dialog('PlayGameDialog', function (session, args) {
         // the 'CreateGameDialog'
         session.replaceDialog('CreateGameDialog');
     }
-}).triggerAction({ matches: /(roll|role|throw|shoot) again/i });
+}).triggerAction({ matches: 'PlayGameDialog' });
 
 /**
  * Listen for the user to ask to play craps.
@@ -257,37 +257,58 @@ bot.dialog('PlayGameDialog', function (session, args) {
  * says without tampering with the dialog stack. In our case what we want to do is
  * call 'PlayGameDialog' with a pre-defined game structure. 
  */
-bot.customAction({
-    matches: /(play|start).*(craps)/i,
-    onSelectAction: function (session, args, next) {
-        // The user could be in another dialog so clear the dialog stack first
-        // to make sure we end that task.
-        session.clearDialogStack().beginDialog('PlayGameDialog', {
-            game: { type: 'craps', sides: 6, count: 2, turn: 0 }
-        });
-    }
-});
+
+// bot.customAction({
+//     matches: /(play|start).*(craps)/i,
+//     onSelectAction: function (session, args, next) {
+//         // The user could be in another dialog so clear the dialog stack first
+//         // to make sure we end that task.
+//         session.clearDialogStack().beginDialog('PlayGameDialog', {
+//             game: { type: 'craps', sides: 6, count: 2, turn: 0 }
+//         });
+//     }
+// });
 
 /**
  * Every bot should have a help dialog. Ours will use a card with some buttons
  * to educate the user with the options available to them.
  */
 bot.dialog('HelpDialog', function (session) {
-    var card = new builder.HeroCard(session)
-        .title('help_title')
-        .buttons([
-            builder.CardAction.imBack(session, 'roll some dice', 'Roll Dice'),
-            builder.CardAction.imBack(session, 'play craps', 'Play Craps')
-        ]);
-    var msg = new builder.Message(session)
-        .speak(speak(session, 'help_ssml'))
-        .addAttachment(card)
-        .inputHint(builder.InputHint.acceptingInput);
-    session.send(msg).endDialog();
+    // var card = new builder.HeroCard(session)
+    //     .title('help_title')
+    //     .buttons([
+    //         builder.CardAction.imBack(session, 'roll some dice', 'Roll Dice'),
+    //         builder.CardAction.imBack(session, 'play craps', 'Play Craps')
+    //     ]);
+    // var msg = new builder.Message(session)
+    //     .speak(speak(session, 'help_ssml'))
+    //     .addAttachment(card)
+    //     .inputHint(builder.InputHint.acceptingInput);
+    // session.send(msg).endDialog();
+    session.endDialog('Hi! Try asking me things like \'....\', \'.....\' or \'.......\'');
 }).triggerAction({ matches: 'HelpDialog' });
 
 /** Helper function to wrap SSML stored in the prompts file with <speak/> tag. */
-function speak(session, prompt) {
-    var localized = session.gettext(prompt);
-    return ssml.speak(localized);
+
+// function speak(session, prompt) {
+//     var localized = session.gettext(prompt);
+//     return ssml.speak(localized);
+// }
+
+// Spell Check
+if (process.env.IS_SPELL_CORRECTION_ENABLED === 'true') {
+    bot.use({
+        botbuilder: function (session, next) {
+            spellService
+                .getCorrectedText(session.message.text)
+                .then(function (text) {
+                    session.message.text = text;
+                    next();
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    next();
+                });
+        }
+    });
 }
