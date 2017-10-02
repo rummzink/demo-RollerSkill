@@ -68,6 +68,7 @@ bot.dialog('CreateGameDialog', [
 
         if (session.dialogData.sidesEntity) {
             // city entity detected, continue to next step
+            console.log("Sides = ", session.dialogData.sidesEntity.entity);
             next({ response: session.dialogData.sidesEntity.entity });
         } else {
             // no entities detected, ask user for a destination
@@ -93,6 +94,7 @@ bot.dialog('CreateGameDialog', [
 
         if (true | session.dialogData.countEntity) {
             // city entity detected, continue to next step
+            console.log("Count = ", session.dialogData.countEntity.entity);
             next({ response: session.dialogData.countEntity.entity });
         } else {
             // no entities detected, ask user for a destination
