@@ -91,7 +91,7 @@ bot.dialog('CreateGameDialog', [
          *   integers back and what's the min & max value that's allowed.
          */
 
-        if (session.dialogData.countEntity) {
+        if (true | session.dialogData.countEntity) {
             // city entity detected, continue to next step
             next({ response: session.dialogData.countEntity.entity });
         } else {

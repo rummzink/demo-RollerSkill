@@ -35,16 +35,11 @@
     }
   ],
   "regex_features": [
-    {
-      "name": "SidesRegex",
-      "pattern": "^(4|6|8|10|12|20)$",
-      "activated": true
-    },
-    {
-      "name": "CountRegex",
-      "pattern": "^[1-9]\\d*$",
-      "activated": true
-    }
+    // {
+    //   "name": "SidesRegex",
+    //   "pattern": "^(4|6|8|10|12|20)$",
+    //   "activated": true
+    // }
   ],
   "utterances": [
     {
@@ -53,29 +48,75 @@
       "entities": []
     },
     {
-      "text": "roll a die",
+      "text": "roll 10 sides die once",
       "intent": "CreateGameDialog",
       "entities": [
         {
           "entity": "Count",
+          "startPos": 4,
+          "endPos": 4
+        },
+        {
+          "entity": "Sides",
           "startPos": 1,
           "endPos": 1
         }
       ]
     },
     {
-      "text": "roll a 4 sides die",
+      "text": "roll 10 sides die twice",
       "intent": "CreateGameDialog",
       "entities": [
         {
           "entity": "Count",
-          "startPos": 1,
-          "endPos": 1
+          "startPos": 4,
+          "endPos": 4
         },
         {
           "entity": "Sides",
-          "startPos": 2,
-          "endPos": 2
+          "startPos": 1,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "roll 10 sides die for 1 time",
+      "intent": "CreateGameDialog",
+      "entities": [
+        {
+          "entity": "Sides",
+          "startPos": 1,
+          "endPos": 1
+        },{
+          "entity": "Count",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "roll 10 sides die for 2 times",
+      "intent": "CreateGameDialog",
+      "entities": [
+        {
+          "entity": "Sides",
+          "startPos": 1,
+          "endPos": 1
+        },{
+          "entity": "Count",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "roll 4 sides die",
+      "intent": "CreateGameDialog",
+      "entities": [
+        {
+          "entity": "Sides",
+          "startPos": 1,
+          "endPos": 1
         }
       ]
     },
