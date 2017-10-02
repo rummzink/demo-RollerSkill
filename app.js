@@ -30,7 +30,6 @@ bot.recognizer(recognizer);
 
 bot.dialog('CreateGameDialog', [
     function (session, args, next) {
-        console.log("Welcome to ", "CreateGameDialog!");
         // Initialize game structure.
         // - dialogData gives us temporary storage of this data in between
         //   turns with the user.
@@ -64,8 +63,13 @@ bot.dialog('CreateGameDialog', [
         //     speak: speak(session, 'choose_sides_ssml') 
         // });
         session.dialogData.sidesEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Sides');
+        if (session.dialogData.sidesEntity){
+            console.log("Found Sides = ", session.dialogData.sidesEntity.entity)
+        }
         session.dialogData.countEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Count');
-        
+        if (session.dialogData.countEntity){
+            console.log("Found Count = ", session.dialogData.countEntity.entity)
+        }
 
         if (session.dialogData.sidesEntity) {
             // city entity detected, continue to next step
@@ -93,7 +97,7 @@ bot.dialog('CreateGameDialog', [
          *   integers back and what's the min & max value that's allowed.
          */
 
-        if (true | session.dialogData.countEntity) {
+        if (session.dialogData.countEntity) {
             // city entity detected, continue to next step
             console.log("Count = ", session.dialogData.countEntity.entity);
             next({ response: session.dialogData.countEntity.entity });
