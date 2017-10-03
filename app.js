@@ -37,7 +37,8 @@ bot.dialog('CreateGameDialog', [
             type: 'custom', 
             sides: null, 
             count: null,
-            turns: 0
+            turns: 0,
+            debug: null
         };
 
         /**
@@ -64,13 +65,12 @@ bot.dialog('CreateGameDialog', [
         // });
         var sidesEntity = builder.EntityRecognizer.findAllEntities(args.intent.entities, 'Sides');
         if (sidesEntity.length){
-            console.log("SIDES FOUND!", sidesEntity);
+            game.debug = sidesEntity;
             sidesEntity = sidesEntity[0];
             game.sides = sidesEntity.entity;
         }
         var countEntity = builder.EntityRecognizer.findAllEntities(args.intent.entities, 'Count');
         if (countEntity.length){
-            console.log("COUNT FOUND!", countEntity);
             countEntity = countEntity[1];
             game.count = countEntity.entity;
         }
