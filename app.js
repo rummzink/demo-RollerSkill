@@ -64,6 +64,7 @@ bot.dialog('CreateGameDialog', [
         // });
         var sidesEntity = builder.EntityRecognizer.findAllEntities(args.intent.entities, 'Sides');
         if (sidesEntity.length){
+            console.log("SIDES FOUND!", sidesEntity);
             sidesEntity = sidesEntity[0];
             game.sides = sidesEntity.entity;
         }
