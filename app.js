@@ -101,7 +101,7 @@ bot.dialog('CreateGameDialog', [
             // city entity detected, continue to next step
             next({ response: game.count });
         } else {
-            
+            game.debug = game.count === 'twice';
             // no entities detected, ask user for a destination
             var prompt = session.gettext('choose_count', game.sides);
             builder.Prompts.number(session, prompt, {
@@ -128,7 +128,7 @@ bot.dialog('CreateGameDialog', [
             game.count = Number(results.reponse);
         }
         else{
-
+            game.count = 1;
         }
         
 
