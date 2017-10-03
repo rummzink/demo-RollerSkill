@@ -97,11 +97,10 @@ bot.dialog('CreateGameDialog', [
          *   integers back and what's the min & max value that's allowed.
          */
 
-        if (false & game.count !== null) {
+        if (game.count !== null) {
             // city entity detected, continue to next step
             next({ response: game.count });
         } else {
-            game.debug = game.count === 'twice';
             // no entities detected, ask user for a destination
             var prompt = session.gettext('choose_count', game.sides);
             builder.Prompts.number(session, prompt, {
@@ -117,15 +116,14 @@ bot.dialog('CreateGameDialog', [
         // Store users input
         // - The response is already a number.
         var game = session.dialogData.game;
-        game.debug = results.reponse;
-        if (results.reponse === 'once'){
+        if (results.response === 'once'){
             game.count = 1;
         }
-        else if (results.reponse === 'twice'){
+        else if (results.response === 'twice'){
             game.count = 2;
         }
-        else if ( ! isNaN(Number(results.reponse))){
-            game.count = Number(results.reponse);
+        else if ( ! isNaN(Number(results.response))){
+            game.count = Number(results.response);
         }
         else{
             game.count = 1;
