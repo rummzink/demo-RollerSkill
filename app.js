@@ -63,7 +63,7 @@ bot.dialog('CreateGameDialog', [
         // builder.Prompts.choice(session, 'choose_sides', choices, { 
         //     speak: speak(session, 'choose_sides_ssml') 
         // });
-        var sidesEntity = builder.EntityRecognizer.findAllEntities(args.intent.entities, 'Count');
+        var sidesEntity = builder.EntityRecognizer.findAllEntities(args.intent.entities);
         if (sidesEntity.length){
             sidesEntity = sidesEntity[0];
             game.sides = sidesEntity.entity;
