@@ -117,14 +117,14 @@ bot.dialog('CreateGameDialog', [
         // Store users input
         // - The response is already a number.
         var game = session.dialogData.game;
-        if (result.reponse == 'once'){
+        if (results.reponse == 'once'){
             game.count = 1;
         }
-        else if (result.reponse == 'twice'){
+        else if (results.reponse == 'twice'){
             game.count = 2;
         }
-        else if ( ! isNaN(Number(result.reponse))){
-            game.count = Number(result.reponse);
+        else if ( ! isNaN(Number(results.reponse))){
+            game.count = Number(results.reponse);
         }
         else{
 
