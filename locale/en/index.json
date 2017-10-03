@@ -62,5 +62,6 @@
     ],
     "help_title": "Roller Options",
     "help_ssml": "I'm roller, the dice rolling bot. You can say 'roll some dice' or play one of the games I know how to play.",
-    "choose_destination": "Please enter your destination."
+    "choose_destination": "Please enter your destination.",
+    "choose_number_of_sides":"Please enter the number of sides of the dice to be rolled."
 }

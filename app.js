@@ -62,12 +62,14 @@ bot.dialog('CreateGameDialog', [
         // builder.Prompts.choice(session, 'choose_sides', choices, { 
         //     speak: speak(session, 'choose_sides_ssml') 
         // });
-        var sidesEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Sides');
+        var sidesEntity = builder.EntityRecognizer.findAllEntity(args.intent.entities, 'Sides');
         if (sidesEntity){
+            sidesEntity = sidesEntity[0];
             game.sides = sidesEntity.entity;
         }
-        var countEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Count');
+        var countEntity = builder.EntityRecognizer.findAllEntity(args.intent.entities, 'Count');
         if (countEntity){
+            countEntity = countEntity[0];
             game.count = countEntity.entity;
         }
 
@@ -77,7 +79,7 @@ bot.dialog('CreateGameDialog', [
         } else {
             // no entities detected, ask user for a destination
             builder.Prompts.text(session, 'Please enter the number of sides of the dice to be rolled.', { 
-                speak: speak(session, 'choose_destination') 
+                speak: speak(session, 'choose_number_of_sides') 
             });
         }
     },
@@ -125,7 +127,7 @@ bot.dialog('CreateGameDialog', [
             game.count = Number(result.reponse);
         }
         else{
-            
+
         }
 
         /**
