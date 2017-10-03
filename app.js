@@ -129,6 +129,8 @@ bot.dialog('CreateGameDialog', [
         else{
 
         }
+        console.warn(game);
+
 
         /**
          * Play the game we just created.
