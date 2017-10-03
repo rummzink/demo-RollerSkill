@@ -64,7 +64,6 @@ bot.dialog('CreateGameDialog', [
         //     speak: speak(session, 'choose_sides_ssml') 
         // });
         var sidesEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Sides');
-        game.debug = args.intent;
         if (sidesEntity){
             game.sides = sidesEntity.entity;
         }
@@ -117,6 +116,7 @@ bot.dialog('CreateGameDialog', [
         // Store users input
         // - The response is already a number.
         var game = session.dialogData.game;
+        game.debug = results.reponse;
         if (results.reponse == 'once'){
             game.count = 1;
         }
