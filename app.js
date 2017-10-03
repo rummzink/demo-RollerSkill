@@ -62,12 +62,12 @@ bot.dialog('CreateGameDialog', [
         // builder.Prompts.choice(session, 'choose_sides', choices, { 
         //     speak: speak(session, 'choose_sides_ssml') 
         // });
-        var sidesEntity = builder.EntityRecognizer.findAllEntity(args.intent.entities, 'Sides');
+        var sidesEntity = builder.EntityRecognizer.findAllEntities(args.intent.entities, 'Sides');
         if (sidesEntity){
             sidesEntity = sidesEntity[0];
             game.sides = sidesEntity.entity;
         }
-        var countEntity = builder.EntityRecognizer.findAllEntity(args.intent.entities, 'Count');
+        var countEntity = builder.EntityRecognizer.findAllEntities(args.intent.entities, 'Count');
         if (countEntity){
             countEntity = countEntity[0];
             game.count = countEntity.entity;
