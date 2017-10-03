@@ -65,11 +65,11 @@ bot.dialog('CreateGameDialog', [
         // });
         var sidesEntity = builder.EntityRecognizer.findAllEntities(args.intent.entities, 'Sides');
         if (sidesEntity.length){
-            game.debug = sidesEntity;
             sidesEntity = sidesEntity[0];
             game.sides = sidesEntity.entity;
         }
         var countEntity = builder.EntityRecognizer.findAllEntities(args.intent.entities, 'Count');
+        game.debug = countEntity;
         if (countEntity.length){
             countEntity = countEntity[1];
             game.count = countEntity.entity;
