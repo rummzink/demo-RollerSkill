@@ -69,6 +69,7 @@ bot.dialog('CreateGameDialog', [
         }
         var countEntity = builder.EntityRecognizer.findAllEntities(args.intent.entities, 'Count');
         if (countEntity.length){
+            console.log("COUNT FOUND!", countEntity);
             countEntity = countEntity[1];
             game.count = countEntity.entity;
         }
