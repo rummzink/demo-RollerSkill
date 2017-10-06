@@ -324,6 +324,24 @@ bot.dialog('HelpDialog', function (session) {
     matches: 'HelpDialog'
 });
 
+bot.dialog('testJSON', function (session) {
+    var resultObj = {
+        intent : "buy",
+        products :[
+            {
+                "name": "SSGN8"
+            },
+            {
+                "name": "iPhone X"
+            }
+        ]
+    };
+    session.endDialog(JSON.stringify(resultObj));
+}).triggerAction({
+    matches: 'testJSON'
+});
+    
+
 // Spell Check
 if (process.env.IS_SPELL_CORRECTION_ENABLED === 'true') {
     bot.use({
